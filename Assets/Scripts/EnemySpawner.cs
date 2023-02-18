@@ -11,8 +11,6 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField]
     private Enemy enemyPrefab;
     [SerializeField]
-    private Transform enemiesTransform;
-    [SerializeField]
     private int enemyCount;
     [SerializeField]
     private float spawnTime;
@@ -47,10 +45,6 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy()
     {
         var createdEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-        if(enemiesTransform != null)
-        {
-            createdEnemy.transform.SetParent(enemiesTransform);
-        }
         var enemyScript = createdEnemy.GetComponent<Enemy>();
         if(enemyScript != null)
         {

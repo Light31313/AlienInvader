@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -14,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        stat.ResetStatIfInEditor();
+        stat.ResetStat();
     }
 
     public async void ShowGameOverMenu(object data)

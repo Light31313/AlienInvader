@@ -52,6 +52,8 @@ public class Enemy : MonoBehaviour
     private bool isCompleteHexagon;
     private Vector3 initialPatrolPosition;
 
+    private Vector3 currentDirection;
+
     private void Awake()
     {
         bulletPool = GameObject.FindGameObjectWithTag(BulletPool.TAG).GetComponent<BulletPool>();
@@ -65,6 +67,8 @@ public class Enemy : MonoBehaviour
         hexagonPoints = hexagon.HexagonPoints;
         enemyState = EnemyState.MOVE_HEXAGON;
         currentPoint = 0;
+        currentDirection = (hexagonPoints[currentPoint].position - transform.position).normalized;
+        MoveToDirection();
         currentHealth = enemyStat.Health;
         shootingTimer = Random.Range(minShootingDelayTime, maxShootingDelayTime);
     }
@@ -111,11 +115,13 @@ public class Enemy : MonoBehaviour
     private void HexagonMove()
     {
         var dir = hexagonPoints[currentPoint].position - transform.position;
-        if (dir.magnitude <= 0.1f)
+        if (dir.magnitude <= 0.02f)
         {
             if(isCompleteHexagon)
             {
                 enemyState = EnemyState.MOVE_LINE_UP;
+                currentDirection = (lineUpPosition - (Vector2)transform.position).normalized;
+                MoveToDirection();
                 return;
             }
 
@@ -125,60 +131,54 @@ public class Enemy : MonoBehaviour
                 isCompleteHexagon = true;
                 currentPoint = 0;
             }
-        }
-        else
-        {
-            MoveToDirection(dir.normalized);
+            currentDirection = (hexagonPoints[currentPoint].position - transform.position).normalized;
+            MoveToDirection();
         }
     }
 
     private void LineUpMove()
     {
         var dir = lineUpPosition - (Vector2)transform.position;
-        if(dir.magnitude <= 0.1f && isFinalEnemy)
+        if (dir.magnitude <= 0.02f)
         {
-            onLastEnemyLineUp.Raise();
-            return;
-        }
-        if(dir.magnitude > 0.03f)
-        {
-            MoveToDirection(dir.normalized);
+            enemy.velocity = Vector2.zero;
+            if (isFinalEnemy)
+                onLastEnemyLineUp.Raise();
         }
     }
 
     public void OnLastEnemyLineUp(object data)
     {
         enemyState = EnemyState.MOVE_DOWN;
+        currentDirection = Vector2.down;
+        MoveToDirection();
         initialPatrolPosition = transform.position;
     }
 
-    private void MoveToDirection(Vector3 dir)
+    private void MoveToDirection()
     {
-        enemy.MovePosition(transform.position + dir * enemyStat.Speed * Time.deltaTime);
+        enemy.velocity = currentDirection * enemyStat.Speed;
     }
 
     private void MoveDown()
     {
         var dir = initialPatrolPosition - transform.position;
-        if(dir.magnitude <= 4f)
-        {
-            MoveToDirection(Vector2.down);
-        } else
+        if(dir.magnitude > 4f)
         {
             enemyState = EnemyState.MOVE_UP;
+            currentDirection = Vector2.up;
+            MoveToDirection();
         }
     }
 
     private void MoveUp()
     {
         var dir = initialPatrolPosition - transform.position;
-        if (dir.magnitude >= 0.1f)
+        if (dir.magnitude < 0.1f) 
         {
-            MoveToDirection(Vector2.up);
-        }
-        else
-        {
+            currentDirection = Vector2.down;
             enemyState = EnemyState.MOVE_DOWN;
+            MoveToDirection();
         }
     }
 

@@ -22,11 +22,8 @@ public class PlayerStat : ScriptableObject
         }
     }
 
-    public void ResetStatIfInEditor()
+    public void ResetStat()
     {
-        if(Application.isEditor)
-        {
-            score = 0;
-        }
+        score = 0;
     }
 }
