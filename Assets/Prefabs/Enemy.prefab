@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5916417448765684498}
   - component: {fileID: 1656926796257638363}
   - component: {fileID: 9070908220663685938}
-  - component: {fileID: -6317487352169076996}
+  - component: {fileID: 5547284219622500138}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -100,7 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46c1aaef0931f3b4b83777c22a50a05c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyState: 0
+  maxShootingDelayTime: 10
+  minBulletSpeed: 2
+  maxBulletSpeed: 5
+  playerStat: {fileID: 11400000, guid: 6e06491ac7a995749b54ec9fbc4c7ecd, type: 2}
+  enemyStat: {fileID: 11400000, guid: 1f97014fd23e3de4aa54852114fca789, type: 2}
   onLastEnemyLineUp: {fileID: 11400000, guid: cb07d198b1086c74ea9942689e895345, type: 2}
+  onEnemyDie: {fileID: 11400000, guid: dceb565070187a046bc4ad0b574256bd, type: 2}
 --- !u!50 &1656926796257638363
 Rigidbody2D:
   serializedVersion: 4
@@ -109,7 +116,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4618359665149013703}
-  m_BodyType: 2
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -136,9 +143,9 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.75470066, y: 1}
+  m_Size: {x: 0.45809415, y: 0.5909591}
   m_Direction: 0
---- !u!114 &-6317487352169076996
+--- !u!114 &5547284219622500138
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -156,8 +163,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5916417448765684498}
         m_TargetAssemblyTypeName: Enemy, Assembly-CSharp
-        m_MethodName: MoveDown
-        m_Mode: 1
+        m_MethodName: OnLastEnemyLineUp
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    [SerializeField]
+    protected BulletStat bulletStat;
+    protected Action<Bullet> disableAction;
 
-    private const float bulletLifeTime = 3f;
-    private Action<Bullet> disableAction;
-
-    private void OnEnable()
+    private void Update()
     {
-        StartCoroutine(DisableBullet());
+        CheckIfInCamera();
     }
 
     public void Init(Action<Bullet> action)
@@ -18,14 +18,12 @@ public class Bullet : MonoBehaviour
         disableAction = action;
     }
 
-    private IEnumerator DisableBullet()
+    private void CheckIfInCamera()
     {
-        yield return new WaitForSeconds(bulletLifeTime);
-        disableAction?.Invoke(this);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        disableAction?.Invoke(this);
+        Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+        if (!(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0))
+        {
+            disableAction?.Invoke(this);
+        }
     }
 }

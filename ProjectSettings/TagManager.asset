@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hexagon
+  - BulletPool
   layers:
   - Default
   - TransparentFX

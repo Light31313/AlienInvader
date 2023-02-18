@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject enemy;
+    private GameEvent onAllEnemiesDie;
+    [SerializeField]
+    private Enemy enemyPrefab;
     [SerializeField]
     private Transform enemiesTransform;
     [SerializeField]
@@ -16,6 +19,7 @@ public class EnemySpawner : MonoBehaviour
     private float spawnTimer;
 
     private int enemyIndex = 0;
+    private int enemyAlive = 0;
     private bool isFinalIndex = false;
 
     // Start is called before the first frame update
@@ -42,7 +46,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        var createdEnemy = Instantiate(enemy, transform.position, Quaternion.identity);
+        var createdEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
         if(enemiesTransform != null)
         {
             createdEnemy.transform.SetParent(enemiesTransform);
@@ -56,6 +60,16 @@ public class EnemySpawner : MonoBehaviour
             }
             enemyScript.SetLineUpPosition(enemyIndex, isFinalIndex);
             enemyIndex++;
+            enemyAlive++;
+        }
+    }
+
+    public void OnEnemyDie(object data)
+    {
+        enemyAlive--;
+        if(enemyAlive <= 0 && isFinalIndex)
+        {
+            onAllEnemiesDie.Raise();
         }
     }
 }

@@ -8,9 +8,11 @@ public class Player : MonoBehaviour
     public const string TAG = "Player";
 
     [SerializeField]
-    private Bullet bulletPrefab;
+    private BulletPool bulletPool;
     [SerializeField]
     private Transform bulletsTransform;
+    [SerializeField]
+    private GameEvent onPlayerDie;
 
     [SerializeField]
     private float shootDelay = 0.3f;
@@ -18,14 +20,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float bulletSpeed = 10f;
 
-    private IObjectPool<Bullet> bulletPool;
-    public IObjectPool<Bullet> BulletPool => bulletPool;
-
     // Start is called before the first frame update
     void Start()
     {
-        bulletPool = new ObjectPool<Bullet>(CreateBullet, OnGetBullet, OnReleaseBullet, OnDestroyBullet, false, 100);
-
         shootTimer = shootDelay;
     }
 
@@ -42,46 +39,20 @@ public class Player : MonoBehaviour
 
     private void Shoot()
     {
-        var bulletRb1 = bulletPool.Get().GetComponent<Rigidbody2D>();
-        var bulletRb2 = bulletPool.Get().GetComponent<Rigidbody2D>();
-        var bulletRb3 = bulletPool.Get().GetComponent<Rigidbody2D>();
-        bulletRb1.transform.rotation = Quaternion.identity;
-        bulletRb1?.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
-        bulletRb2.transform.rotation = Quaternion.Euler(0, 0, 15);
-        bulletRb2?.AddForce(bulletRb2.transform.up * bulletSpeed, ForceMode2D.Impulse);
-        bulletRb3.transform.rotation = Quaternion.Euler(0, 0, -15);
-        bulletRb3?.AddForce(bulletRb3.transform.up * bulletSpeed, ForceMode2D.Impulse);
+        SpawnBullet(bulletPool.GetBullet().GetComponent<Rigidbody2D>(), 0);
+        SpawnBullet(bulletPool.GetBullet().GetComponent<Rigidbody2D>(), 15);
+        SpawnBullet(bulletPool.GetBullet().GetComponent<Rigidbody2D>(), -15);
     }
 
-    private Bullet CreateBullet()
+    private void SpawnBullet(Rigidbody2D bulletRb, float bulletAngle)
     {
-        var bullet = Instantiate(bulletPrefab);
-        bullet.Init(ReleaseBullet);
-        if(bulletsTransform != null)
-        {
-            bullet.transform.SetParent(bulletsTransform);
-        }
-        return bullet;
+        bulletRb.transform.rotation = Quaternion.Euler(0, 0, bulletAngle);
+        bulletRb.velocity = bulletSpeed * bulletRb.transform.up;
+        bulletRb.transform.position = transform.position;
     }
 
-    private void OnGetBullet(Bullet bullet)
-    {
-        bullet.transform.position = transform.position;
-        bullet.gameObject.SetActive(true);
-    }
-
-    private void OnReleaseBullet(Bullet bullet)
-    {
-        bullet.gameObject.SetActive(false);
-    }
-
-    private void OnDestroyBullet(Bullet bullet)
-    {
-        Destroy(bullet.gameObject);
-    }
-
-    private void ReleaseBullet(Bullet bullet)
-    {
-        bulletPool.Release(bullet);
+    public void Die() {
+        onPlayerDie.Raise(null);
+        Destroy(gameObject);
     }
 }

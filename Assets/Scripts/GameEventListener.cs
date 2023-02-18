@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[System.Serializable]
+public class CustomGameEvent : UnityEvent<object> { }
+
 public class GameEventListener : MonoBehaviour
 {
     [SerializeField]
     private GameEvent gameEvent;
 
-    public UnityEvent response;
+    public CustomGameEvent response;
 
     private void OnEnable()
     {
-        gameEvent?.RegisterListenter(this);
+        gameEvent.RegisterListenter(this);
     }
 
     private void OnDisable()
     {
-        gameEvent?.UnregisterListener(this);
+        gameEvent.UnregisterListener(this);
     }
 
-    public void OnEventRaised()
+    public void OnEventRaised(object data)
     {
-        response?.Invoke();
+        response.Invoke(data);
     }
 }
